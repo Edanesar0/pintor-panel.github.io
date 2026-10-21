@@ -1,0 +1,82 @@
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: #16181d; color: #e6e6e6; margin: 0; padding: 24px;
+}
+h1 { font-size: 20px; margin-bottom: 4px; }
+.subtitle { color: #9aa0a8; margin-bottom: 24px; font-size: 13px; }
+.panel {
+  background: #1e2127; border: 1px solid #2c303a; border-radius: 10px;
+  padding: 18px 20px; margin-bottom: 20px;
+}
+.panel h2 { margin: 0 0 4px; font-size: 15px; }
+.panel .hint { color: #8a919c; font-size: 12px; margin-bottom: 14px; }
+label { display: block; font-size: 12px; color: #b5bac2; margin: 10px 0 4px; }
+input[type=text], input[type=number], select {
+  background: #12141a; border: 1px solid #333844; color: #e6e6e6;
+  border-radius: 6px; padding: 6px 8px; font-size: 13px; width: 160px;
+}
+input[type=color] { width: 46px; height: 30px; padding: 0; border: none; vertical-align: middle; }
+button {
+  background: #3b6ef0; color: white; border: none; border-radius: 6px;
+  padding: 8px 16px; font-size: 13px; cursor: pointer; margin-top: 12px;
+}
+button:hover { background: #4c7bff; }
+button.secondary { background: #333844; }
+button.secondary:hover { background: #40465a; }
+.row { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-end; }
+.row > div { display: flex; flex-direction: column; }
+canvas { background: #000; border: 1px solid #333844; border-radius: 6px; cursor: crosshair; max-width: 100%; touch-action: none; }
+.swatch { display: inline-flex; align-items: center; gap: 8px; margin: 4px 8px 4px 0; font-size: 12px; }
+.swatch .box { width: 22px; height: 22px; border-radius: 4px; border: 1px solid #444; flex-shrink: 0; }
+.swatch-clickable { cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+.swatch-clickable:hover { background: #262b35; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid #262a33; }
+th { color: #8a919c; font-weight: 500; }
+.tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
+.tag.ok { background: #1f4d2e; color: #8ee6a8; }
+.tag.no { background: #4d1f1f; color: #e68e8e; }
+.status { font-size: 12px; color: #8a919c; margin-top: 8px; }
+.col-hex { display: inline-flex; align-items: center; gap: 6px; }
+.col-hex .box { width: 14px; height: 14px; border-radius: 3px; display: inline-block; border: 1px solid #444; }
+
+.paste-zone {
+  border: 2px dashed #333844; border-radius: 8px; padding: 18px; text-align: center;
+  color: #8a919c; font-size: 13px; margin-bottom: 12px; transition: background 0.15s, border-color 0.15s;
+}
+.paste-zone.paste-zone-active { border-color: #3b6ef0; background: #1a2540; color: #cddcff; }
+
+#buscarResultado, #mezclaResultado, #capaResultado, #extraccionResultado {
+  overflow-x: auto;
+}
+table { min-width: 480px; }
+
+/* ======================= MOBILE (telefonos y tablets angostas) ======================= */
+@media (max-width: 640px) {
+  body { padding: 14px; }
+  h1 { font-size: 18px; }
+  .panel { padding: 14px; }
+  .row { flex-direction: column; align-items: stretch; gap: 12px; }
+  .row > div { width: 100%; }
+  input[type=text], input[type=number], select { width: 100%; font-size: 14px; padding: 10px; }
+  input[type=color] { width: 100%; height: 42px; }
+  button { width: 100%; padding: 12px 16px; font-size: 14px; }
+  .paste-zone { padding: 16px 10px; font-size: 13px; }
+  table { font-size: 11px; min-width: 420px; }
+  th, td { padding: 6px; }
+}
+/* ======================= ZOOM DEL VISOR ======================= */
+.zoom-controls { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+.zoom-controls button { margin-top: 0; width: auto; padding: 8px 14px; }
+.zoom-controls span { font-size: 12px; color: #b5bac2; min-width: 46px; text-align: center; }
+#visor {
+  overflow: auto;
+  max-height: 70vh;
+  max-width: 100%;
+  border: 1px solid #333844;
+  border-radius: 6px;
+  background: #000;
+}
+#visor canvas { display: block; max-width: none; border: none; border-radius: 0; }

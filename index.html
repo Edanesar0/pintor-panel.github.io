@@ -1,1 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Pintor de Miniaturas — Panel de pruebas</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
 
+<h1>Pintor de Miniaturas — Panel de pruebas</h1>
+<div class="subtitle">
+  Reimplementación en JavaScript de <code>color_extractor.py</code> y <code>match_inventario.py</code> para probar
+  la lógica sin terminal. Abrir <code>index.html</code> directo en el navegador (doble clic), no requiere servidor.
+  Inventario embebido: SDP, SART (+12 tintas), SC, SIN, VGC, VMC, AC, SS — 316 códigos con HEX real de los charts/catálogos oficiales.
+</div>
+
+<!-- ================= EXTRACCION DE COLOR ================= -->
+<div class="panel">
+  <h2>1. Extracción de color (equivalente a extraer_color.sh)</h2>
+  <div class="hint">Pegá una imagen (Ctrl+V / Cmd+V) o subí un archivo. Opcionalmente dibujá un recorte de zona arrastrando sobre la imagen (equivalente a --bbox), y extraé Base/Sombra/Luz.</div>
+
+  <div class="paste-zone" id="pasteZone" tabindex="0">
+    📋 En computadora: click acá y pegá con <b>Ctrl+V</b> (Cmd+V en Mac).
+    En celular: tocá acá para elegir foto o cámara.
+  </div>
+
+  <div class="row">
+    <div>
+      <label>Imagen (alternativa a pegar)</label>
+      <input type="file" id="imgInput" accept="image/*">
+    </div>
+    <div>
+      <label>Tonos</label>
+      <select id="tonosSelect"><option value="3">3 (Sombra/Base/Luz)</option><option value="5">5 (piel/Showcase)</option></select>
+    </div>
+    <div>
+      <button id="btnExtraer">Extraer</button>
+    </div>
+    <div>
+      <button class="secondary" id="btnLimpiarBbox">Limpiar recorte</button>
+    </div>
+  </div>
+
+  <p class="status" id="bboxStatus">Sin recorte — se analiza la imagen completa.</p>
+  <div class="zoom-controls">
+  <button type="button" class="secondary" id="zoomOut">−</button>
+  <span id="zoomLevel">100%</span>
+  <button type="button" class="secondary" id="zoomIn">+</button>
+  <button type="button" class="secondary" id="zoomReset">Restablecer zoom</button>
+</div>
+<div id="visor">
+  <canvas id="canvas" width="500" height="375"></canvas>
+</div>
+
+  <div id="extraccionResultado"></div>
+</div>
+
+<!-- ================= BUSCAR ================= -->
+<div class="panel">
+  <h2>2. Buscar en inventario (equivalente a match_inventario.py buscar)</h2>
+  <div class="hint">No exige HEX exacto: clasifica por distancia de color (delta-E) en Cercano (&le;15) y Aceptable (15-30), cruzando todas las gamas a la vez.</div>
+
+  <div class="row">
+    <div>
+      <label>Color objetivo</label>
+      <input type="color" id="buscarColor" value="#f6a260">
+      <input type="text" id="buscarHex" value="#F6A260">
+    </div>
+    <div>
+      <label>Gama (opcional)</label>
+      <select id="buscarGama">
+        <option value="">Todas</option>
+        <option value="SDP">SDP (Drop &amp; Paint XL)</option>
+        <option value="SART">SART (Color Artist)</option>
+        <option value="SC">SC (Metal n' Alchemy)</option>
+        <option value="SIN">SIN (Instant Colors)</option>
+        <option value="VGC">VGC (Vallejo Game Color)</option>
+        <option value="VMC">VMC (Vallejo Model Color)</option>
+        <option value="AC">AC (AeroCreate Acrílico)</option>
+        <option value="SS">SS (AeroCreate Supersonic)</option>
+      </select>
+    </div>
+    <div><button id="btnBuscar">Buscar</button></div>
+  </div>
+
+  <div id="buscarResultado"></div>
+</div>
+
+<!-- ================= MEZCLA ================= -->
+<div class="panel">
+  <h2>3. Mezcla dentro de una gama (equivalente a match_inventario.py mezcla)</h2>
+  <div class="hint">Prueba combinaciones de 2 y de 3 colores dentro de UNA sola gama. Si indicás tono sombra/luz + color base, aplica la Regla 1 de teoría del color (temperatura) y marca qué mezclas la cumplen.</div>
+
+  <div class="row">
+    <div>
+      <label>Color objetivo</label>
+      <input type="color" id="mezclaColor" value="#3a1810">
+      <input type="text" id="mezclaHex" value="#3A1810">
+    </div>
+    <div>
+      <label>Gama (obligatoria)</label>
+      <select id="mezclaGama">
+        <option value="SDP">SDP (Drop &amp; Paint XL)</option>
+        <option value="SART" selected>SART (Color Artist)</option>
+        <option value="SC">SC (Metal n' Alchemy)</option>
+        <option value="SIN">SIN (Instant Colors)</option>
+        <option value="VGC">VGC (Vallejo Game Color)</option>
+        <option value="VMC">VMC (Vallejo Model Color)</option>
+        <option value="AC">AC (AeroCreate Acrílico)</option>
+        <option value="SS">SS (AeroCreate Supersonic)</option>
+      </select>
+    </div>
+    <div>
+      <label>Tono (opcional)</label>
+      <select id="mezclaTono">
+        <option value="">— sin regla de teoría —</option>
+        <option value="sombra">Sombra</option>
+        <option value="luz">Luz</option>
+      </select>
+    </div>
+    <div>
+      <label>Color base de la zona (si elegiste tono)</label>
+      <input type="color" id="mezclaBaseColor" value="#f6a260">
+      <input type="text" id="mezclaBaseHex" value="#F6A260">
+    </div>
+    <div><button id="btnMezcla">Mezclar</button></div>
+  </div>
+
+  <p class="status" id="mezclaStatus"></p>
+  <div id="mezclaResultado"></div>
+</div>
+
+<!-- ================= CAPA (LAYERING) ================= -->
+<div class="panel">
+  <h2>4. Capa sobre una base ya pintada (equivalente a match_inventario.py capa)</h2>
+  <div class="hint">
+    Esto NO es una mezcla en paleta: simula qué pasa ópticamente si aplicás wash/glaze/layering encima de una base ya
+    seca (la base se transparenta según la técnica y cuántas pasadas). Por eso sí puede cruzar gamas. Elegí un color
+    para simular directo, o dejá "Código a aplicar" vacío y usá el objetivo para que busque en todo el inventario.
+  </div>
+
+  <div class="row">
+    <div>
+      <label>Color base (ya pintado)</label>
+      <input type="color" id="capaBaseColor" value="#f6a260">
+      <input type="text" id="capaBaseHex" value="#F6A260">
+    </div>
+    <div>
+      <label>Código a aplicar (opcional, modo directo)</label>
+      <input type="text" id="capaCodigo" placeholder="ej. SART79" style="width:110px;">
+    </div>
+    <div>
+      <label>Técnica</label>
+      <select id="capaTecnica">
+        <option value="">— todas —</option>
+        <option value="wash">wash</option>
+        <option value="pinwash">pinwash</option>
+        <option value="glazing">glazing</option>
+        <option value="layering">layering</option>
+        <option value="ink">ink</option>
+        <option value="semiseco">semiseco</option>
+      </select>
+    </div>
+    <div>
+      <label>Pasadas (modo directo)</label>
+      <input type="number" id="capaPasadas" min="1" max="4" value="1" style="width:60px;">
+    </div>
+    <div>
+      <label>Objetivo (modo búsqueda, si no hay código)</label>
+      <input type="color" id="capaObjetivoColor" value="#3a1810">
+      <input type="text" id="capaObjetivoHex" value="#3A1810">
+    </div>
+    <div><button id="btnCapa">Calcular</button></div>
+  </div>
+
+  <p class="status" id="capaStatus"></p>
+  <div id="capaResultado"></div>
+</div>
+
+<script src="js/inventario-data.js"></script>
+<script src="js/color-math.js"></script>
+<script src="js/ui-utils.js"></script>
+<script src="js/buscar.js"></script>
+<script src="js/mezcla.js"></script>
+<script src="js/capa.js"></script>
+<script src="js/extraccion.js"></script>
+<script src="js/zoom.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
